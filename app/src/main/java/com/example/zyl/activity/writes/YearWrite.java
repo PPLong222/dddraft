@@ -7,23 +7,20 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,15 +30,13 @@ import com.example.zyl.Helper.Constants;
 import com.example.zyl.Helper.ViewCutHelper;
 import com.example.zyl.MainActivity;
 import com.example.zyl.R;
+import com.example.zyl.activity.ImageOutputActivity;
 import com.example.zyl.activity.PhotoSelectActivity;
 import com.example.zyl.activity.view.DrugImageView;
-import com.example.zyl.activity.view.InterceptConstraintLayout;
+import com.example.zyl.activity.view.WriteableEditText;
 import com.example.zyl.activity.view.YearSelectorView;
-import com.example.zyl.recycle.adapter.WeekRecycleviewAdapter;
-import com.example.zyl.recycle.adapter.YearRecyclerviewAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.example.zyl.Helper.Constants.ON_OUTPUT_CANCEL;
 
 public class YearWrite extends Activity implements View.OnClickListener {
     private ImageView buttonBack;
@@ -110,6 +105,7 @@ public class YearWrite extends Activity implements View.OnClickListener {
         buttonOversee.setOnClickListener(this);
         buttonAddPicture.setOnClickListener(this);
         buttonAddText.setOnClickListener(this);
+
     }
 
     @Override
@@ -120,14 +116,19 @@ public class YearWrite extends Activity implements View.OnClickListener {
                 startActivity(intent);
                 break;
             case R.id.head_text_oversee:
+
                 Bitmap bitmapFromView = ViewCutHelper.shotScrollView(scrollView);
                 String path = ViewCutHelper.saveImg(bitmapFromView, currentYear, this);
-
+                intent = new Intent(YearWrite.this, ImageOutputActivity.class);
+                intent.putExtra("img_path", path);
+                startActivityForResult(intent, ON_OUTPUT_CANCEL);
                 break;
             case R.id.chooseText:
+                generateText(isViewVisible(scrollLinearLayout.getChildAt(0)));
                 break;
             case R.id.choosePhoto:
                 intent = new Intent(YearWrite.this, PhotoSelectActivity.class);
+                intent.putExtra("year", currentYear);
                 startActivityForResult(intent, Constants.ON_PHOTO_SELECTED);
                 break;
             case R.id.head_pullback:
@@ -160,14 +161,40 @@ public class YearWrite extends Activity implements View.OnClickListener {
 
                     }*/
                     String img_path = data.getStringExtra("img_path");
-                    generateImg(img_path,isViewVisible(scrollLinearLayout.getChildAt(0)));
+                    generateImg(img_path, isViewVisible(scrollLinearLayout.getChildAt(0)));
 
                 }
-                break;
-
         }
     }
-    private void generateImg(String url,int recTop){
+
+
+    private void generateText(int recTop) {
+        WriteableEditText editText = new WriteableEditText(this);
+        editText.setEditTextListener(new WriteableEditText.OnEditTextListener() {
+            @Override
+            public void onClicked(double x, double y) {
+
+            }
+
+            @Override
+            public void onMove(View v, int rawx, int rawy, int x, int y) {
+                Rect scrollBounds = new Rect();
+                scrollView.getDrawingRect(scrollBounds);
+                v.setX(rawx - x);
+                v.setY(rawy - y + scrollBounds.top);
+            }
+        });
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.topMargin = recTop;
+        editText.setLayoutParams(params);
+
+        editText.setPadding(30, 5, 5, 30);
+
+        RelativeLayout layout = findViewById(R.id.scrollview_inside);
+        layout.addView(editText);
+    }
+
+    private void generateImg(String url, int recTop) {
         DrugImageView imageView = new DrugImageView(this);
         imageView.setListener(new DrugImageView.OnImageDragListener() {
             @Override
@@ -196,6 +223,7 @@ public class YearWrite extends Activity implements View.OnClickListener {
         Glide.with(this).load(url).into(imageView);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(400,400);
         params.topMargin = recTop;
+        Toast.makeText(this, "" + recTop, Toast.LENGTH_SHORT).show();
         imageView.setLayoutParams(params);
 
         imageView.setPadding(30,5,5,30);
@@ -232,4 +260,5 @@ public class YearWrite extends Activity implements View.OnClickListener {
         }*/
        return scrollBounds.top;
     }
+
 }

@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,9 +25,8 @@ import com.example.zyl.activity.PhotoSelectActivity;
 import com.example.zyl.activity.TextActivity;
 import com.example.zyl.activity.view.MonthSelectorView;
 import com.example.zyl.model.MonthDataModel;
-import com.example.zyl.recycle.BaseRecyclerAdapter;
-import com.example.zyl.recycle.MyRVViewHolder;
-import com.example.zyl.recycle.adapter.WeekRecycleviewAdapter;
+import com.example.zyl.recycle.adapter.BaseRecyclerAdapter;
+import com.example.zyl.recycle.holder.MyRVViewHolder;
 
 import org.litepal.crud.DataSupport;
 
@@ -50,6 +47,7 @@ public class MonthWrite extends Activity implements View.OnClickListener{
     List<MonthDataModel> lists = new ArrayList();
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

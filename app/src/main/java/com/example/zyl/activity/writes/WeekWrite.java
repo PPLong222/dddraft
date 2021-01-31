@@ -24,11 +24,9 @@ import com.example.zyl.R;
 import com.example.zyl.StrUtil;
 import com.example.zyl.activity.PhotoSelectActivity;
 import com.example.zyl.activity.TextActivity;
-import com.example.zyl.model.AllUsedPictures;
-import com.example.zyl.model.MonthDataModel;
 import com.example.zyl.model.WeekDataModel;
-import com.example.zyl.recycle.BaseRecyclerAdapter;
-import com.example.zyl.recycle.MyRVViewHolder;
+import com.example.zyl.recycle.adapter.BaseRecyclerAdapter;
+import com.example.zyl.recycle.holder.MyRVViewHolder;
 
 import org.litepal.crud.DataSupport;
 
@@ -49,6 +47,7 @@ public class WeekWrite extends Activity implements View.OnClickListener {
     private RecyclerView weekRecyclerView;
     List<WeekDataModel> lists = new ArrayList();
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

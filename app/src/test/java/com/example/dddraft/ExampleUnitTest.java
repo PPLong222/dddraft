@@ -71,5 +71,4 @@ public class ExampleUnitTest {
         return imagePath;
     }
 
-
 }

@@ -18,6 +18,9 @@ import java.io.FileOutputStream;
 import java.util.Calendar;
 
 public class ViewCutHelper {
+    private static String Tag = ViewCutHelper.class.getSimpleName();
+    private String dirFileOfYear = "/draft/viewCuts/byYear";
+
     public static Bitmap shotScrollView(ScrollView scrollView) {
         int h = 0;
         Bitmap bitmap = null;
@@ -55,16 +58,11 @@ public class ViewCutHelper {
                 file.mkdirs();
             }
             Log.i("SaveImg", "file uri==>" + dir);
-            File mFile = new File(dir + Integer.toString(year)+".jpg");                            //将要保存的图片文件
-            if (mFile.exists()) {
-                Toast.makeText(context, "该图片已存在!", Toast.LENGTH_SHORT).show();
-
-            }
-
+            File mFile = new File(dir + year + ".jpg");                            //将要保存的图片文件
+            Log.d(Tag, "ss" + mFile.exists());
             FileOutputStream outputStream = new FileOutputStream(mFile);             //构建输出流
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);  //compress到输出outputStream
             Uri uri = Uri.fromFile(mFile);                                             //获得图片的uri
-            Log.d("111"," "+uri.toString());
             context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri)); //发送广播通知更新图库，这样系统图库可以找到这张图片
             return uri.toString();
 
@@ -73,4 +71,23 @@ public class ViewCutHelper {
         }
         return null;
     }
+
+    public static void deleteFile(String url) {
+        File file = new File(url);
+        if (file.exists()) {
+            file.delete();
+        }
+
+    }
+
+    public void renameFile(String filePath, String fileType, int year) {
+        String originType = filePath.substring(filePath.lastIndexOf("."), filePath.length());
+        String sdcardPath = System.getenv("EXTERNAL_STORAGE");      //获得sd卡路径
+        File file = new File(sdcardPath + dirFileOfYear + year + originType);
+        File newFile = new File(sdcardPath + dirFileOfYear + year + fileType);
+
+        file.renameTo(newFile);
+
+    }
+
 }

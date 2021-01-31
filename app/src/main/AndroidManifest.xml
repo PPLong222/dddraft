@@ -39,6 +39,7 @@
         <activity android:name="com.example.zyl.activity.writes.WeekWrite" />
         <activity android:name=".activity.PhotoSelectActivity" />
         <activity android:name=".activity.TextActivity" />
+        <activity android:name=".activity.ImageOutputActivity" />
     </application>
 
 </manifest>
