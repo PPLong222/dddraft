@@ -1,5 +1,6 @@
 package com.example.zyl.activity.writes;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -57,6 +58,8 @@ public class MonthWrite extends Activity implements View.OnClickListener{
     }
 
     MyAdapter weekRecycleviewAdapter;
+
+    @SuppressLint("CutPasteId")
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void setUi() {
         buttonBack = findViewById(R.id.month_head_nav).findViewById(R.id.head_back);

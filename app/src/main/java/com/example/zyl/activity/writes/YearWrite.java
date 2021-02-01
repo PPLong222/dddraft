@@ -182,6 +182,7 @@ public class YearWrite extends Activity implements View.OnClickListener {
                 scrollView.getDrawingRect(scrollBounds);
                 v.setX(rawx - x);
                 v.setY(rawy - y + scrollBounds.top);
+                Log.d("YearWrite", v.getY() + "" + v.getX() + "");
             }
         });
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

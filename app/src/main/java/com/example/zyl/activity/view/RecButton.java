@@ -12,7 +12,7 @@ import com.example.zyl.R;
 public class RecButton extends androidx.appcompat.widget.AppCompatButton implements View.OnClickListener {
     public RecButton(@NonNull Context context) {
         super(context);
-        View view = LayoutInflater.from(context).inflate(R.layout.red_rec,null);
+        View view = LayoutInflater.from(context).inflate(R.layout.red_rec, null);
         this.setOnClickListener(this);
     }
 
