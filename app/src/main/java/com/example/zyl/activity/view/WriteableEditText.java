@@ -29,6 +29,10 @@ public class WriteableEditText extends ConstraintLayout implements View.OnTouchL
     private View view;
     private View rootView;
 
+    public EditText getEditText() {
+        return editText;
+    }
+
     public WriteableEditText(@NonNull Context context) {
         super(context);
         view = LayoutInflater.from(context).inflate(R.layout.writebale_edittext, null);

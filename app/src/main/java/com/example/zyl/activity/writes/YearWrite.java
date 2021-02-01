@@ -3,15 +3,21 @@ package com.example.zyl.activity.writes;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -27,14 +33,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.zyl.Helper.AlbumHelper;
 import com.example.zyl.Helper.Constants;
+import com.example.zyl.Helper.EditTestStyleHelper;
 import com.example.zyl.Helper.ViewCutHelper;
 import com.example.zyl.MainActivity;
 import com.example.zyl.R;
 import com.example.zyl.activity.ImageOutputActivity;
 import com.example.zyl.activity.PhotoSelectActivity;
 import com.example.zyl.activity.view.DrugImageView;
+import com.example.zyl.activity.view.TextStyleDialog;
 import com.example.zyl.activity.view.WriteableEditText;
 import com.example.zyl.activity.view.YearSelectorView;
+import com.example.zyl.model.CurrentTextStyleModel;
+
+import java.time.format.TextStyle;
+
+import top.defaults.colorpicker.ColorPickerPopup;
 
 import static com.example.zyl.Helper.Constants.ON_OUTPUT_CANCEL;
 
@@ -42,6 +55,7 @@ public class YearWrite extends Activity implements View.OnClickListener {
     private ImageView buttonBack;
     private TextView buttonOversee;
     private TextView textType;
+    private Button textStyleButton;
     private ImageView buttonPullBack;
     private ImageView buttonAddPicture;
     private ImageView buttonAddText;
@@ -50,7 +64,12 @@ public class YearWrite extends Activity implements View.OnClickListener {
     private LinearLayoutManager linearLayout;
     private ScrollView scrollView;
     private RelativeLayout scrollLinearLayout;
-    private int currentYear = 1970 ;
+    private int currentYear = 1970;
+    private TextStyleDialog textStyleDialog;
+    private CurrentTextStyleModel currentTextStyle;
+
+    public YearWrite() {
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,10 +81,12 @@ public class YearWrite extends Activity implements View.OnClickListener {
 
     private void setUi() {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        currentTextStyle = new CurrentTextStyleModel();
 
         buttonBack = findViewById(R.id.year_head_nav).findViewById(R.id.head_back);
         buttonOversee = findViewById(R.id.year_head_nav).findViewById(R.id.head_text_oversee);
         textType = findViewById(R.id.year_head_nav).findViewById(R.id.head_text);
+        textStyleButton = findViewById(R.id.year_bottom_nav).findViewById(R.id.textStyle_choose);
         textType.setText("Year");
         buttonPullBack = findViewById(R.id.year_head_nav).findViewById(R.id.head_pullback);
         buttonAddPicture = findViewById(R.id.year_bottom_nav).findViewById(R.id.choosePhoto);
@@ -105,6 +126,7 @@ public class YearWrite extends Activity implements View.OnClickListener {
         buttonOversee.setOnClickListener(this);
         buttonAddPicture.setOnClickListener(this);
         buttonAddText.setOnClickListener(this);
+        textStyleButton.setOnClickListener(this);
 
     }
 
@@ -137,11 +159,25 @@ public class YearWrite extends Activity implements View.OnClickListener {
                     @Override
                     public void onDismissed(int year, int month) {
                         // get selectYearFrom AlertDialog
-                        Log.d("YearWrite",year+"");
-                        currentYear = year ;
+                        Log.d("YearWrite", year + "");
+                        currentYear = year;
                     }
                 });
                 selectorView.show();
+                break;
+            case R.id.textStyle_choose:
+                textStyleDialog = new TextStyleDialog(this);
+                textStyleDialog.setOnDismissedListener(new TextStyleDialog.OnTextStyleDialogDismissedListener() {
+                    @Override
+                    public void OnDismissed(String textStyle, boolean isBold, boolean isItalic, boolean isUnderLine, int r) {
+                        currentTextStyle.setBold(isBold);
+                        currentTextStyle.setColor(r);
+                        currentTextStyle.setItalic(isItalic);
+                        currentTextStyle.setUnderLine(isUnderLine);
+                        currentTextStyle.setTextStyle(textStyle);
+                    }
+                });
+                textStyleDialog.show();
                 break;
         }
     }
@@ -190,7 +226,8 @@ public class YearWrite extends Activity implements View.OnClickListener {
         editText.setLayoutParams(params);
 
         editText.setPadding(30, 5, 5, 30);
-
+        //set editText Style
+        EditTestStyleHelper.setTestStyle(this, editText.getEditText(), currentTextStyle);
         RelativeLayout layout = findViewById(R.id.scrollview_inside);
         layout.addView(editText);
     }

@@ -7,4 +7,8 @@ public class Constants {
     public static final int CAMERA_REQUEST_CODE = 5;
     public static final int ON_OUTPUT_CANCEL = 6;
     public static final int MONTH_NUMBER = 12;
+
+    public static final String[] fontStyle = {
+            "arial.ttf", "Inkfree.ttf", "字魂59号-创粗黑.ttf"
+    };
 }
