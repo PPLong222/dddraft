@@ -11,4 +11,6 @@ public class Constants {
     public static final String[] fontStyle = {
             "arial.ttf", "Inkfree.ttf", "字魂59号-创粗黑.ttf"
     };
+    public static final int DefaultImageWidth = 400;
+    public static final int DefaultImageHeight = 400;
 }

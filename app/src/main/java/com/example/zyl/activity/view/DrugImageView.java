@@ -1,5 +1,6 @@
 package com.example.zyl.activity.view;
 
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Matrix;
@@ -20,14 +21,14 @@ import androidx.annotation.NonNull;
 import com.example.zyl.Helper.ImagePositionManager;
 
 @SuppressLint("AppCompatCustomView")
-public class DrugImageView extends ImageView implements View.OnTouchListener,ScaleGestureDetector.OnScaleGestureListener  {
+public class DrugImageView extends ImageView implements View.OnTouchListener, ScaleGestureDetector.OnScaleGestureListener {
     private OnImageDragListener listener;
     private ScaleGestureDetector scaleGestureDetector;
     private long startTime;
     private long endTime;
-    private int initX;
-    private int initY;
-    private boolean isFirstClicked= true;
+    private int lastX;
+    private int lastY;
+    private boolean isFirstClicked = true;
     private long ClickTimeDuration = 100;
     private boolean isUpRepeat = false;
 
@@ -43,7 +44,8 @@ public class DrugImageView extends ImageView implements View.OnTouchListener,Sca
     public DrugImageView(@NonNull Context context) {
         super(context);
         setOnTouchListener(this);
-        scaleGestureDetector= new ScaleGestureDetector(context,this);
+        setScaleType(ScaleType.CENTER_CROP);
+        scaleGestureDetector = new ScaleGestureDetector(context, this);
 
     }
 
@@ -58,21 +60,21 @@ public class DrugImageView extends ImageView implements View.OnTouchListener,Sca
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     isUpRepeat = false;
+                    lastX = (int) event.getX();
+                    lastY = (int) event.getY();
                     startTime = System.currentTimeMillis();
                     endTime = System.currentTimeMillis();
+                    // 还原初始点击时 相对图片的xy 坐标
                     listener.onDragDown();
                     Log.d(Tag, "down");
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if(fingerCount ==1 ) {
+                    if (fingerCount == 1) {
                         if (endTime - startTime > ClickTimeDuration) {
-                            if (isFirstClicked) {
-                                initX = (int) event.getRawX();
-                                initY = (int) event.getRawY();
-                                isFirstClicked = false;
-                            }
-                            listener.onMove(v, (int) event.getRawX(), (int) event.getRawY(), initX, initY);
-
+                            int offsetX = (int) (event.getX() - lastX);
+                            int offsetY = (int) (event.getY() - lastY);
+                            layout(getLeft() + offsetX, getTop() + offsetY, getRight() + offsetX, getBottom() + offsetY);
+                            //listener.onMove(v, (int) event.getRawX(), (int) event.getRawY(), initX, initY);
                             break;
                         }
                     }
@@ -80,10 +82,9 @@ public class DrugImageView extends ImageView implements View.OnTouchListener,Sca
                     endTime = System.currentTimeMillis();
                     Log.d(Tag, "up");
                     if (endTime - startTime < ClickTimeDuration) {
-                        listener.onClicked(initX, initY);
-                        //setOnTouchListener(null);
 
                     }
+                    isFirstClicked = true;
                     listener.onDragUp();
                     break;
 
@@ -114,15 +115,13 @@ public class DrugImageView extends ImageView implements View.OnTouchListener,Sca
     @Override
     public void onScaleEnd(ScaleGestureDetector detector) {
         Log.d("Drug","END");
-
     }
 
 
     public interface OnImageDragListener{
         void onDragDown();
         void onDragUp();
-        void onClicked(double x,double y);
-        void onMove(View v,int rawx,int rawy,int x,int y);
+
     }
 
 }

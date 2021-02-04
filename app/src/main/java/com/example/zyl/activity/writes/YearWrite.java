@@ -1,5 +1,6 @@
 package com.example.zyl.activity.writes;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -49,6 +50,7 @@ import java.time.format.TextStyle;
 
 import top.defaults.colorpicker.ColorPickerPopup;
 
+import static com.example.zyl.Helper.Constants.DefaultImageWidth;
 import static com.example.zyl.Helper.Constants.ON_OUTPUT_CANCEL;
 
 public class YearWrite extends Activity implements View.OnClickListener {
@@ -245,32 +247,21 @@ public class YearWrite extends Activity implements View.OnClickListener {
                 isScrollable(false);
             }
 
-            @Override
-            public void onClicked(double x,double y) {
-
-            }
-
-            @Override
-            public void onMove(View v,int rawx,int rawy,int x,int y) {
-                Rect scrollBounds = new Rect();
-                scrollView.getDrawingRect(scrollBounds);
-                v.setX(rawx-x);
-                v.setY(rawy-y+scrollBounds.top);
-            }
         });
         Glide.with(this).load(url).into(imageView);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(400,400);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(DefaultImageWidth, DefaultImageWidth);
         params.topMargin = recTop;
         Toast.makeText(this, "" + recTop, Toast.LENGTH_SHORT).show();
         imageView.setLayoutParams(params);
 
-        imageView.setPadding(30,5,5,30);
+        //imageView.setPadding(30,5,5,30);
 
         RelativeLayout layout = findViewById(R.id.scrollview_inside);
         layout.addView(imageView);
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void isScrollable(boolean bool) {
         scrollView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -284,19 +275,12 @@ public class YearWrite extends Activity implements View.OnClickListener {
         Rect scrollBounds = new Rect();
         scrollView.getDrawingRect(scrollBounds);
 
-        float top = view.getTop();
-        float height =view.getHeight();
+        float height = view.getHeight();
         int i = (int) (scrollBounds.top / height);
 
-        //Log.d("YearWrite","top" + top  +"bottom"+bottom);
-        Log.d("YearWrite123","view height " +height+"  scroll top"+scrollBounds.top);
-        Toast.makeText(this, ""+i, Toast.LENGTH_SHORT).show();
-       /* if (scrollBounds.top <= top && scrollBounds.bottom >= bottom) {
-            return i;
-        } else {
-            return false;
-        }*/
-       return scrollBounds.top;
+        Log.d("YearWrite123", "view height " + height + "  scroll top" + scrollBounds.top);
+
+        return scrollBounds.top;
     }
 
 }
