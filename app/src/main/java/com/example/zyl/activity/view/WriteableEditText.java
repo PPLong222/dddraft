@@ -62,6 +62,8 @@ public class WriteableEditText extends ConstraintLayout implements View.OnTouchL
                     listener.onMove(rootView, (int) event.getRawX(), (int) event.getRawY(), initX, initY);
                     break;
                 case MotionEvent.ACTION_UP:
+                    Log.d("Writebale", "down");
+
                     secondClickTime = System.currentTimeMillis();
                     if (secondClickTime - firstClickTime < timeDuration) {
                         if (dragButton.getAlpha() != 0) {
@@ -92,7 +94,6 @@ public class WriteableEditText extends ConstraintLayout implements View.OnTouchL
                 if (secondClickTime - firstClickTime > timeDuration) {
 
                 }
-                Log.d(Tag, "down");
                 break;
             case MotionEvent.ACTION_MOVE:
 /*
@@ -108,7 +109,6 @@ public class WriteableEditText extends ConstraintLayout implements View.OnTouchL
             case MotionEvent.ACTION_UP:
                 secondClickTime = System.currentTimeMillis();
 
-                Log.d(Tag, "up");
 
                 break;
 

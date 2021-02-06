@@ -227,7 +227,7 @@ public class YearWrite extends Activity implements View.OnClickListener {
         params.topMargin = recTop;
         editText.setLayoutParams(params);
 
-        editText.setPadding(30, 5, 5, 30);
+
         //set editText Style
         EditTestStyleHelper.setTestStyle(this, editText.getEditText(), currentTextStyle);
         RelativeLayout layout = findViewById(R.id.scrollview_inside);
@@ -245,7 +245,10 @@ public class YearWrite extends Activity implements View.OnClickListener {
             @Override
             public void onDragUp() {
                 isScrollable(false);
+
+
             }
+
 
         });
         Glide.with(this).load(url).into(imageView);

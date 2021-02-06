@@ -13,6 +13,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,9 @@ public class DrugImageView extends ImageView implements View.OnTouchListener, Sc
     private long endTime;
     private int lastX;
     private int lastY;
+    private int offsetX;
+    private int offsetY;
+    private View rootView;
     private boolean isFirstClicked = true;
     private long ClickTimeDuration = 100;
     private boolean isUpRepeat = false;
@@ -45,7 +49,8 @@ public class DrugImageView extends ImageView implements View.OnTouchListener, Sc
         super(context);
         setOnTouchListener(this);
         setScaleType(ScaleType.CENTER_CROP);
-        scaleGestureDetector = new ScaleGestureDetector(context, this);
+        rootView = this.getRootView();
+        scaleGestureDetector = new ScaleGestureDetector(rootView.getContext(), this);
 
     }
 
@@ -54,9 +59,9 @@ public class DrugImageView extends ImageView implements View.OnTouchListener, Sc
     public boolean onTouch(View v, MotionEvent event) {
         //解决滑动时带来的 ACTION_CANCEL 的问题（事件分发）
         getParent().requestDisallowInterceptTouchEvent(true);
+
         int fingerCount = event.getPointerCount();
         scaleGestureDetector.onTouchEvent(event);
-        Log.d(Tag,""+fingerCount);
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     isUpRepeat = false;
@@ -66,21 +71,25 @@ public class DrugImageView extends ImageView implements View.OnTouchListener, Sc
                     endTime = System.currentTimeMillis();
                     // 还原初始点击时 相对图片的xy 坐标
                     listener.onDragDown();
-                    Log.d(Tag, "down");
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (fingerCount == 1) {
                         if (endTime - startTime > ClickTimeDuration) {
-                            int offsetX = (int) (event.getX() - lastX);
-                            int offsetY = (int) (event.getY() - lastY);
-                            layout(getLeft() + offsetX, getTop() + offsetY, getRight() + offsetX, getBottom() + offsetY);
-                            //listener.onMove(v, (int) event.getRawX(), (int) event.getRawY(), initX, initY);
+                            offsetX = (int) (event.getX() - lastX);
+                            offsetY = (int) (event.getY() - lastY);
+                            rootView.layout(getLeft() + offsetX, getTop() + offsetY, getRight() + offsetX, getBottom() + offsetY);
                             break;
                         }
                     }
                 case MotionEvent.ACTION_UP:
                     endTime = System.currentTimeMillis();
-                    Log.d(Tag, "up");
+                    // 这也是很重要的一步， 在layout时不会改变param的数据
+                    //重新添加后位置就会初始化，因此这里需要手动的更改其param参数并设置
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) rootView.getLayoutParams();
+                    params.topMargin = getTop();
+                    params.leftMargin = getLeft();
+                    rootView.setLayoutParams(params);
+
                     if (endTime - startTime < ClickTimeDuration) {
 
                     }
@@ -96,11 +105,10 @@ public class DrugImageView extends ImageView implements View.OnTouchListener, Sc
 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
-
-        originFactor *=detector.getScaleFactor();
+        Log.d(Tag, "enter" + detector.getScaleFactor());
+        originFactor *= detector.getScaleFactor();
         setScaleX(originFactor);
         setScaleY(originFactor);
-
         return false;
     }
 
@@ -121,6 +129,7 @@ public class DrugImageView extends ImageView implements View.OnTouchListener, Sc
     public interface OnImageDragListener{
         void onDragDown();
         void onDragUp();
+
 
     }
 
