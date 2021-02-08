@@ -1,6 +1,8 @@
 package com.example.zyl.activity.view;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -28,6 +30,15 @@ public class WriteableEditText extends ConstraintLayout implements View.OnTouchL
     private OnEditTextListener listener;
     private View view;
     private View rootView;
+    private int currentTextSize;
+
+    public int getCurrentTextSize() {
+        return currentTextSize;
+    }
+
+    public void setCurrentTextSize(int currentTextSize) {
+        this.currentTextSize = currentTextSize;
+    }
 
     public EditText getEditText() {
         return editText;
@@ -39,6 +50,7 @@ public class WriteableEditText extends ConstraintLayout implements View.OnTouchL
         addView(view);
         //这一步十分关键！
         rootView = this.getRootView();
+        currentTextSize = 20;
         editText = findViewById(R.id.year_editText);
 
         dragButton = findViewById(R.id.textdrag_button);
@@ -79,6 +91,7 @@ public class WriteableEditText extends ConstraintLayout implements View.OnTouchL
             return true;
         });
         setOnTouchListener(this);
+
 
     }
 
@@ -122,4 +135,5 @@ public class WriteableEditText extends ConstraintLayout implements View.OnTouchL
 
         void onMove(View v, int rawx, int rawy, int x, int y);
     }
+
 }

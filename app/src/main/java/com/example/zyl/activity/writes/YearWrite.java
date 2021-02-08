@@ -10,7 +10,16 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -34,7 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.zyl.Helper.AlbumHelper;
 import com.example.zyl.Helper.Constants;
-import com.example.zyl.Helper.EditTestStyleHelper;
+import com.example.zyl.Helper.TextStyleHelper;
 import com.example.zyl.Helper.ViewCutHelper;
 import com.example.zyl.MainActivity;
 import com.example.zyl.R;
@@ -161,7 +170,6 @@ public class YearWrite extends Activity implements View.OnClickListener {
                     @Override
                     public void onDismissed(int year, int month) {
                         // get selectYearFrom AlertDialog
-                        Log.d("YearWrite", year + "");
                         currentYear = year;
                     }
                 });
@@ -171,12 +179,8 @@ public class YearWrite extends Activity implements View.OnClickListener {
                 textStyleDialog = new TextStyleDialog(this);
                 textStyleDialog.setOnDismissedListener(new TextStyleDialog.OnTextStyleDialogDismissedListener() {
                     @Override
-                    public void OnDismissed(String textStyle, boolean isBold, boolean isItalic, boolean isUnderLine, int r) {
-                        currentTextStyle.setBold(isBold);
-                        currentTextStyle.setColor(r);
-                        currentTextStyle.setItalic(isItalic);
-                        currentTextStyle.setUnderLine(isUnderLine);
-                        currentTextStyle.setTextStyle(textStyle);
+                    public void OnDismissed(CurrentTextStyleModel currentTextStyleModel) {
+                        currentTextStyle = currentTextStyleModel;
                     }
                 });
                 textStyleDialog.show();
@@ -220,18 +224,31 @@ public class YearWrite extends Activity implements View.OnClickListener {
                 scrollView.getDrawingRect(scrollBounds);
                 v.setX(rawx - x);
                 v.setY(rawy - y + scrollBounds.top);
-                Log.d("YearWrite", v.getY() + "" + v.getX() + "");
             }
         });
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.topMargin = recTop;
         editText.setLayoutParams(params);
 
-
         //set editText Style
-        EditTestStyleHelper.setTestStyle(this, editText.getEditText(), currentTextStyle);
+        TextStyleHelper.setTestStyle(this, editText.getEditText(), currentTextStyle);
         RelativeLayout layout = findViewById(R.id.scrollview_inside);
         layout.addView(editText);
+        editText.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                TextStyleHelper.setEditText(s, currentTextStyle, editText, start, this);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                editText.getEditText().setSelection(s.length());
+            }
+        });
     }
 
     private void generateImg(String url, int recTop) {
